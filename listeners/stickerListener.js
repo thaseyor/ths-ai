@@ -9,13 +9,10 @@ export const stickerListener = () => {
 
       const isSticker =
         update._ === 'updateNewMessage' &&
-        message &&
-        message.media._ &&
+        message?.media?._ &&
         message.media._ === 'messageMediaDocument'
 
-      if (!isSticker) return
-
-      log(update._)
+      if (!isSticker || message.out) return
 
       const stickerId = message.media.document.id
 
@@ -24,6 +21,8 @@ export const stickerListener = () => {
         stickerId !== '2074256487122731018'
       )
         return
+
+      log('Sticker')
 
       await api.call('messages.sendMedia', {
         peer: peerFromMsg({

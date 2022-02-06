@@ -5,12 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "parse": "node services/telegramParser.js",
+    "train": "node brain/index.cjs"
   },
   "author": "thaseyor",
   "license": "ISC",
   "dependencies": {
     "@mtproto/core": "^6.1.1",
+    "brain.js": "^2.0.0-beta.4",
     "dotenv": "^15.0.0",
     "input": "^1.0.1"
   },
