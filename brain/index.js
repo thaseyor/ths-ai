@@ -1,22 +1,26 @@
-const fs = require('fs')
+import fs from 'fs'
+import { createRequire } from 'module'
 
+const require = createRequire(import.meta.url)
 const brain = require('brain.js')
-const input = require('input')
+import input from 'input'
 
-const trainNet = require('./train.cjs')
-const loadNet = require('./load.cjs')
+import trainNet from '#root/brain/train.js'
 
 const net = new brain.recurrent.LSTM({
-  hiddenLayers: [20, 20, 20, 20, 20, 20, 20],
+  hiddenLayers: [80, 80], // 2-4 layers recommended
 })
 
+// import loadNet from '#root/brain/load.js'
 // loadNet(net)
 
+// training error record: 0.04094568624572072
+
 trainNet(net, {
-  INPUT_LENGTH: 2000,
+  INPUT_LENGTH: 6000, // need to increase
   iterations: 300,
-  learningRate: 0.001,
-  momentum: 0.05,
+  learningRate: 0.0008, // 0.003
+  momentum: 0.02, // 0.03
 })
 
 let netOverwritten = false
@@ -26,7 +30,7 @@ const overwriteNet = async () => {
 
   if (override) {
     const json = JSON.stringify(net.toJSON())
-    fs.writeFileSync('data/trainedNet2.json', json, 'utf-8')
+    fs.writeFileSync('data/trainedNet.json', json, 'utf-8')
     netOverwritten = true
   }
 }

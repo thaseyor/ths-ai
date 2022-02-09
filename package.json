@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "parse": "node services/telegramParser.js",
-    "train": "node brain/index.cjs"
+    "train": "node brain/index.js"
   },
   "author": "thaseyor",
   "license": "ISC",
