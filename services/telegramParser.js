@@ -1,11 +1,12 @@
 import fs from 'fs'
-import { MY_USER_ID } from '#root/config.js'
 import { cleanText } from '#root/utils.js'
 
-const rawdata = fs.readFileSync('data/telegramData.json')
+const rawdata = fs.readFileSync('data/result.json')
 const data = JSON.parse(rawdata)
 
 const trainData = []
+
+const MY_USER_ID = 'user' + data.personal_information.user_id
 
 data.chats.list.forEach((chat) => {
   console.log('Parsing: ' + chat.name)

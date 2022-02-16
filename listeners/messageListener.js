@@ -14,10 +14,33 @@ import {
 import loadNet from '#root/brain/load.js'
 import api from '#root/api.js'
 
-const net = new brain.recurrent.LSTM()
-loadNet(net)
+export const messageListener = () => {
+  const net = new brain.recurrent.LSTM()
+  loadNet(net)
 
-log('Net loaded')
+  log('Net loaded')
+
+  api.on('updateShortMessage', (message) => {
+    if (message.out) return // ignore outgoing messages
+
+    const peer = peerFromMsg({
+      msg_id: message.id,
+      user_id: message.user_id,
+    })
+
+    // read chat history after 2 seconds
+    setTimeout(
+      async () => await api.call('messages.readHistory', { peer }),
+      1000
+    )
+
+    const input = cleanText(message.message)
+    if (!input) return
+
+    debouncedSetTyping({ peer })
+    debouncedReply({ message: input, peer })
+  })
+}
 
 const debouncedSetTyping = debounce(async ({ peer }) => {
   await api.call('messages.setTyping', {
@@ -49,26 +72,3 @@ const debouncedReply = debounce(async ({ message, peer }) => {
     }),
   ])
 }, 3500)
-
-export const messageListener = () => {
-  api.on('updateShortMessage', (message) => {
-    if (message.out) return // ignore outgoing messages
-
-    const peer = peerFromMsg({
-      msg_id: message.id,
-      user_id: message.user_id,
-    })
-
-    // read chat history after 2 seconds
-    setTimeout(
-      async () => await api.call('messages.readHistory', { peer }),
-      1000
-    )
-
-    const input = cleanText(message.message)
-    if (!input) return
-
-    debouncedSetTyping({ peer })
-    debouncedReply({ message: input, peer })
-  })
-}

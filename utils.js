@@ -24,7 +24,7 @@ export const cleanText = (text) => {
     .replaceAll('/n', ' ')
     .replaceAll('-', ' ')
     .replaceAll(':', ' ')
-    .replace(/[^а-яa-z\s]/gi, '')
+    .replace(/[^а-яa-zё\s]/gi, '')
     .replace(/\s+/g, ' ')
     .trim()
 }
