@@ -8,21 +8,19 @@ import input from 'input'
 import trainNet from '#root/brain/train.js'
 
 const net = new brain.recurrent.LSTM({
-  hiddenLayers: [80, 80], // 2-4 layers recommended
+  hiddenLayers: [70, 70], // 2-3 layers recommended
 })
 
 // import loadNet from '#root/brain/load.js'
 // loadNet(net)
 
-// training error record: 0.04094568624572072
-
 trainNet(net, {
-  INPUT_LENGTH: 6000, // need to increase
-  iterations: 300,
-  learningRate: 0.0008, // 0.003
-  momentum: 0.02, // 0.03
+  INPUT_LENGTH: 6000,
+  iterations: 200,
+  learningRate: 0.0003, // 0.001
 })
 
+net.maxPredictionLength = 40
 let netOverwritten = false
 
 const overwriteNet = async () => {

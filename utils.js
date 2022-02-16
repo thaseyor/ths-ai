@@ -43,3 +43,7 @@ export const debounce = (func, wait) => {
     timeout = setTimeout(later, wait)
   }
 }
+
+export const getRandomItem = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}

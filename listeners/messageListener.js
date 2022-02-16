@@ -17,37 +17,38 @@ import api from '#root/api.js'
 const net = new brain.recurrent.LSTM()
 loadNet(net)
 
-const reply = debounce(async ({ message, peer }) => {
-  const input = cleanText(message)
-  log(`Message: ${input}`)
+log('Net loaded')
 
-  const output = net.run(input)
-  log(`Output: ${output}`)
-
-  if (!output) return
-
+const debouncedSetTyping = debounce(async ({ peer }) => {
   await api.call('messages.setTyping', {
     peer,
     action: { _: 'sendMessageTypingAction' },
   })
+}, 2000)
 
-  setTimeout(async () => {
-    await Promise.all([
-      api.call('messages.sendMessage', {
-        peer,
-        message: output,
-        random_id: random_id(),
-      }),
-      api.call('messages.setTyping', {
-        peer,
-        action: { _: 'sendMessageCancelAction' },
-      }),
-      api.call('account.updateStatus', {
-        offline: { _: 'BoolTrue' },
-      }),
-    ])
-  }, 2500)
-}, 5500)
+const debouncedReply = debounce(async ({ message, peer }) => {
+  log(`Message: ${message}`)
+
+  const output = net.run(message)
+  log(`Output: ${output}`)
+
+  if (!output) return
+
+  await Promise.all([
+    api.call('messages.sendMessage', {
+      peer,
+      message: `[AI Gandon] ${output}`,
+      random_id: random_id(),
+    }),
+    api.call('messages.setTyping', {
+      peer,
+      action: { _: 'sendMessageCancelAction' },
+    }),
+    api.call('account.updateStatus', {
+      offline: { _: 'BoolTrue' },
+    }),
+  ])
+}, 3500)
 
 export const messageListener = () => {
   api.on('updateShortMessage', (message) => {
@@ -61,9 +62,13 @@ export const messageListener = () => {
     // read chat history after 2 seconds
     setTimeout(
       async () => await api.call('messages.readHistory', { peer }),
-      3000
+      1000
     )
 
-    reply({ message: message.message, peer })
+    const input = cleanText(message.message)
+    if (!input) return
+
+    debouncedSetTyping({ peer })
+    debouncedReply({ message: input, peer })
   })
 }

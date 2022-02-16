@@ -5,7 +5,6 @@ const SECOND = 1000 // milliseconds
 
 const getDateDiff = (start, end) => {
   const dateDifference = (end.getTime() - start.getTime()).toFixed(1) / SECOND
-
   return dateDifference.toFixed(1)
 }
 
@@ -18,7 +17,9 @@ export default (
   { iterations = 20000, learningRate = 0.3, momentum = 0.1, INPUT_LENGTH = 100 }
 ) => {
   console.log('Train data volume: ' + trainData.length)
-  console.log('Current input: ' + INPUT_LENGTH)
+  console.log(
+    `Current input: ${INPUT_LENGTH}, learningRate: ${learningRate}, momentum: ${momentum}`
+  )
 
   let start = new Date()
   net.train(trainData.slice(0, INPUT_LENGTH), {
@@ -40,7 +41,7 @@ export default (
       console.log(
         `${currentPercentage}% -`,
         stats + ',',
-        `iteration time: ${dateDifference} s`
+        `iteration time: ${dateDifference}s`
       )
     },
     // true to use console.log, when a function is supplied it is used --> Either true or a function
