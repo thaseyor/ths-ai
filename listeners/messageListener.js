@@ -59,7 +59,7 @@ export const messageListener = () => {
     await Promise.all([
       api.call('messages.sendMessage', {
         peer,
-        message: `[AI Gandon] ${output}`,
+        message: `[AI] ${output}`,
         random_id: random_id(),
       }),
       api.call('messages.setTyping', {
