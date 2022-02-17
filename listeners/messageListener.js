@@ -40,35 +40,35 @@ export const messageListener = () => {
     debouncedSetTyping({ peer })
     debouncedReply({ message: input, peer })
   })
+
+  const debouncedSetTyping = debounce(async ({ peer }) => {
+    await api.call('messages.setTyping', {
+      peer,
+      action: { _: 'sendMessageTypingAction' },
+    })
+  }, 2000)
+
+  const debouncedReply = debounce(async ({ message, peer }) => {
+    log(`Message: ${message}`)
+
+    const output = net.run(message)
+    log(`Output: ${output}`)
+
+    if (!output) return
+
+    await Promise.all([
+      api.call('messages.sendMessage', {
+        peer,
+        message: `[AI Gandon] ${output}`,
+        random_id: random_id(),
+      }),
+      api.call('messages.setTyping', {
+        peer,
+        action: { _: 'sendMessageCancelAction' },
+      }),
+      api.call('account.updateStatus', {
+        offline: { _: 'BoolTrue' },
+      }),
+    ])
+  }, 3500)
 }
-
-const debouncedSetTyping = debounce(async ({ peer }) => {
-  await api.call('messages.setTyping', {
-    peer,
-    action: { _: 'sendMessageTypingAction' },
-  })
-}, 2000)
-
-const debouncedReply = debounce(async ({ message, peer }) => {
-  log(`Message: ${message}`)
-
-  const output = net.run(message)
-  log(`Output: ${output}`)
-
-  if (!output) return
-
-  await Promise.all([
-    api.call('messages.sendMessage', {
-      peer,
-      message: `[AI Gandon] ${output}`,
-      random_id: random_id(),
-    }),
-    api.call('messages.setTyping', {
-      peer,
-      action: { _: 'sendMessageCancelAction' },
-    }),
-    api.call('account.updateStatus', {
-      offline: { _: 'BoolTrue' },
-    }),
-  ])
-}, 3500)
